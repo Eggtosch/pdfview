@@ -15,6 +15,8 @@ struct pdf {
 	int page_height;
 };
 
+#define FPS 30
+
 static bool got_signal = false;
 
 void sig_handler(int signum) {
@@ -172,6 +174,22 @@ static void check_start_pos(struct pdf *pdf) {
 		pdf->start++;
 	}
 
+	int num = -1;
+	if (IsKeyPressed(KEY_ZERO))  { num = 0; }
+	if (IsKeyPressed(KEY_ONE))   { num = 1; }
+	if (IsKeyPressed(KEY_TWO))   { num = 2; }
+	if (IsKeyPressed(KEY_THREE)) { num = 3; }
+	if (IsKeyPressed(KEY_FOUR))  { num = 4; }
+	if (IsKeyPressed(KEY_FIVE))  { num = 5; }
+	if (IsKeyPressed(KEY_SIX))   { num = 6; }
+	if (IsKeyPressed(KEY_SEVEN)) { num = 7; }
+	if (IsKeyPressed(KEY_EIGHT)) { num = 8; }
+	if (IsKeyPressed(KEY_NINE))  { num = 9; }
+
+	if (num != -1) {
+		pdf->start = pdf->npages / 10.0 * num;
+	}
+
 	if (pdf->start < 0) {
 		pdf->start = 0;
 	} else if (pdf->start > max_pdf_start) {
@@ -193,20 +211,20 @@ int main(int argc, char **argv) {
 
 	signal(SIGUSR1, sig_handler);
 
-	int fps = 30;
 	SetTraceLogLevel(LOG_NONE);
 	SetConfigFlags(FLAG_WINDOW_RESIZABLE);
 	InitWindow(800, 600, "pdfview");
-	SetTargetFPS(fps);
+	SetTargetFPS(FPS);
 
 	struct pdf pdf = pdf_open(argv[1]);
 
 	int draw_reload_message = 0;
-	while (!WindowShouldClose()) {
+	while (!WindowShouldClose() && !IsKeyPressed(KEY_Q)) {
 		if (got_signal) {
 			got_signal = false;
 			pdf = pdf_reload_from_disk(pdf);
-			draw_reload_message = fps * 5;
+			draw_reload_message = 5 * FPS;
+			DisableEventWaiting();
 		}
 
 		if (IsWindowResized()) {
@@ -247,6 +265,8 @@ int main(int argc, char **argv) {
 			int y = GetScreenHeight() - fontsize - 10;
 			DrawRectangle(x, y, reload_text_w + 10, fontsize + 10, BLACK);
 			DrawText(reload_text, x + 5, y + 5, fontsize, GREEN);
+		} else {
+			EnableEventWaiting();
 		}
 
 		EndDrawing();
