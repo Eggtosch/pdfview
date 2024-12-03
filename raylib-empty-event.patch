@@ -1,0 +1,12 @@
+diff --git a/src/platforms/rcore_desktop.c b/src/platforms/rcore_desktop.c
+index f0877416..59c120bc 100644
+--- a/src/platforms/rcore_desktop.c
++++ b/src/platforms/rcore_desktop.c
+@@ -681,6 +681,7 @@ void SetWindowOpacity(float opacity)
+ void SetWindowFocused(void)
+ {
+     glfwFocusWindow(platform.handle);
++	glfwPostEmptyEvent();
+ }
+ 
+ // Get native window handle

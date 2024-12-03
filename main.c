@@ -22,6 +22,7 @@ static bool got_signal = false;
 void sig_handler(int signum) {
 	(void) signum;
 	got_signal = true;
+	SetWindowFocused();
 }
 
 static Vector2 pdf_get_size(struct pdf *pdf, int p) {
